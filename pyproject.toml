@@ -1,0 +1,27 @@
+[tool.poetry]
+name = "autorecon_reporting"
+version = "1.0.0"
+description="Tool used to make HTML report from AutoRecon outputs"
+authors = [
+    "Malsius",
+    "Nemrode",
+    "alexlyy",
+    "theophilegreg"
+]
+readme = "README.md"
+repository = "https://github.com/Malsius/autorecon-reporting"
+packages = [
+    {include = "autorecon_reporting"}
+]
+include = ["templates/template.jinja"]
+
+[tool.poetry.dependencies]
+python-libnmap = "~0.7.3"
+Jinja2 = "~3.1.2"
+
+[tool.poetry.scripts]
+autorecon-reporting = "autorecon_reporting.main:main"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"

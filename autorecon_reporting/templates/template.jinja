@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Pentest enum report</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-aFq/bzH65dt+w6FI2ooMVUpc+21e0SRygnTpmBvdBgSdnuTN7QbdgL+OapgHtvPp" crossorigin="anonymous">
+</head>
+<body>
+    <h1 class="text-center">{{ host }}</h1>
+    <div class="card bg-primary-subtle p-2 m-2">
+        <h2 class="card-title text-center">TCP</h2>
+        {% if protocols.tcp %}
+            {% for port, content in protocols.tcp.items() %}
+                <div class="card bg-success-subtle p-2 m-2">
+                    <h3 class="card-title text-center">{{ port }}</h3>
+                    <p>Service : {{ content.service }}</p>
+                    <p>Version : {{ content.banner }}</p>
+                    {% if content.nmap_scripts %}
+                        <div class="card bg-secondary-subtle p-2 m-2">
+                            <h4 class="card-title text-center">Nmap scripts :</h4>
+                            {% for script_name, script_output in content.nmap_scripts.items() %}
+                                <div>
+                                    <p class="fw-bold">{{ script_name }}</p>
+                                    {% if script_output %}
+                                        <pre><code>{{ script_output|e }}</code></pre>
+                                    {% else %}
+                                        <pre><code>No output</code></pre>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if content.tools %}
+                        <div class="card bg-secondary-subtle p-2 m-2">
+                            <h4 class="card-title text-center">Tools :</h4>
+                            {% for tool_name, tool_output in content.tools.items() %}
+                                <div>
+                                <p class="fw-bold">{{ tool_name }}</p>
+                                {% if tool_name == "screenshot"%}
+                                    <img src="{{ tool_output }}" class="img-fluid">
+                                {% else %}
+                                    <pre><code>{{ tool_output|e }}</code></pre>
+                                {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No TCP ports open</p>
+        {% endif %}
+    </div>
+    <div class="card bg-primary-subtle p-2 m-2">
+        <h2 class="card-title text-center">UDP</h2>
+        {% if protocols.udp %}
+            {% for port, content in protocols.udp.items() %}
+                <div class="card bg-success-subtle p-2 m-2">
+                    <h3 class="card-title text-center">{{ port }}</h3>
+                    <p>Service : {{ content.service }}</p>
+                    <p>Version : {{ content.banner }}</p>
+                    {% if content.nmap_scripts %}
+                        <div class="card bg-secondary-subtle p-2 m-2">
+                            <h4 class="card-title text-center">Nmap scripts :</h4>
+                            {% for script_name, script_output in content.nmap_scripts.items() %}
+                                <div>
+                                    <p class="fw-bold">{{ script_name }}</p>
+                                    {% if script_output %}
+                                        <pre><code>{{ script_output|e }}</code></pre>
+                                    {% else %}
+                                        <pre><code>No output</code></pre>
+                                    {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                    {% if content.tools %}
+                        <div class="card bg-secondary-subtle p-2 m-2">
+                            <h4 class="card-title text-center">Tools :</h4>
+                            {% for tool_name, tool_output in content.tools.items() %}
+                                <div>
+                                <p class="fw-bold">{{ tool_name }}</p>
+                                {% if tool_name == "screenshot"%}
+                                    <img src="{{ tool_output }}" class="img-fluid">
+                                {% else %}
+                                    <pre>{{ tool_output|e }}</pre>
+                                {% endif %}
+                                </div>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>No UDP ports open</p>
+        {% endif %}
+    </div>
+</body>
+</html>
