@@ -95,53 +95,60 @@ def parse_service(service, host):
     }
 
 
+def parse_protocol(host, host_address, protocol, result, host_scans_path):
+    if host.is_up():
+        if not result.get(host_address):
+            result[host_address] = {}
+        result[host_address][protocol] = {}
+        for service in host.services:
+            if service.open():
+                result[host_address][protocol][service.port] = {
+                    "service": service.service,
+                    "banner": parse_banner(service.banner),
+                    "nmap_scripts": parse_nmap_scripts(host.scripts_results, service.scripts_results),
+                }
+        for port, content in result[host_address][protocol].items():
+            service_path = os.path.join(host_scans_path, f"{protocol}{port}")
+            service_xml_path = os.path.join(service_path, "xml")
+            if os.path.exists(service_xml_path):
+                for file in os.listdir(service_xml_path):
+                    service_xml_report = NmapParser.parse_fromfile(os.path.join(service_xml_path, file))
+                    host = service_xml_report.hosts[0]
+                    for host_service in host.services:
+                        content["nmap_scripts"] = parse_nmap_scripts(host.scripts_results,
+                                                                     host_service.scripts_results,
+                                                                     content["nmap_scripts"])
+            content["tools"] = parse_tools(service_path, protocol, port)
+    return result
+
+
 def main():
     result = {}
     source_path = os.path.abspath(sys.argv[1])
-    for host_address in os.listdir(source_path):
+    host_list = [host for host in os.listdir(source_path) if host != "report.md"]
+    for host_address in host_list:
         host_scans_path = os.path.join(source_path, host_address, "scans")
 
-        tcp_scan_report = NmapParser.parse_fromfile(os.path.join(host_scans_path, "xml", "_full_tcp_nmap.xml"))
-        udp_scan_report = NmapParser.parse_fromfile(os.path.join(host_scans_path, "xml", "_top_100_udp_nmap.xml"))
+        if os.path.exists(os.path.join(host_scans_path, "xml", "_full_tcp_nmap.xml")):
+            tcp_scan_report = NmapParser.parse_fromfile(os.path.join(host_scans_path, "xml", "_full_tcp_nmap.xml"))
+        elif os.path.exists(os.path.join(host_scans_path, "xml", "_quick_tcp_nmap.xml")):
+            tcp_scan_report = NmapParser.parse_fromfile(os.path.join(host_scans_path, "xml", "_quick_tcp_nmap.xml"))
+        else:
+            tcp_scan_report = None
 
-        tcp_host = tcp_scan_report.hosts[0]
-        udp_host = udp_scan_report.hosts[0]
+        if tcp_scan_report:
+            tcp_host = tcp_scan_report.hosts[0]
+            result = parse_protocol(tcp_host, host_address, "tcp", result, host_scans_path)
 
-        if tcp_host.is_up() or udp_host.is_up():
+        if os.path.exists(os.path.join(host_scans_path, "xml", "_top_100_udp_nmap.xml")):
+            udp_scan_report = NmapParser.parse_fromfile(os.path.join(host_scans_path, "xml", "_top_100_udp_nmap.xml"))
+        else:
+            udp_scan_report = None
 
-            result[host_address] = {
-                "tcp": {},
-                "udp": {}
-            }
+        if udp_scan_report:
+            udp_host = udp_scan_report.hosts[0]
+            result = parse_protocol(udp_host, host_address, "udp", result, host_scans_path)
 
-            for service in tcp_host.services:
-                if service.open():
-                    result[host_address]["tcp"][service.port] = {
-                        "service": service.service,
-                        "banner": parse_banner(service.banner),
-                        "nmap_scripts": parse_nmap_scripts(tcp_host.scripts_results, service.scripts_results),
-                    }
-            for service in udp_host.services:
-                if service.open():
-                    result[host_address]["udp"][service.port] = {
-                        "service": service.service,
-                        "banner": parse_banner(service.banner),
-                        "nmap_scripts": parse_nmap_scripts(udp_host.scripts_results, service.scripts_results)
-                    }
-
-            for protocol, services in result[host_address].items():
-                for port, content in services.items():
-                    service_path = os.path.join(host_scans_path, f"{protocol}{port}")
-                    service_xml_path = os.path.join(service_path, "xml")
-                    if os.path.exists(service_xml_path):
-                        for file in os.listdir(service_xml_path):
-                            service_xml_report = NmapParser.parse_fromfile(os.path.join(service_xml_path, file))
-                            host = service_xml_report.hosts[0]
-                            for host_service in host.services:
-                                content["nmap_scripts"] = parse_nmap_scripts(host.scripts_results,
-                                                                             host_service.scripts_results,
-                                                                             content["nmap_scripts"])
-                    content["tools"] = parse_tools(service_path, protocol, port)
     render_report(result)
 
 

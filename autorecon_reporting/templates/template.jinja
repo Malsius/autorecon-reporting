@@ -12,12 +12,12 @@
         {% if protocols.tcp %}
             {% for port, content in protocols.tcp.items() %}
                 <div class="card bg-success-subtle p-2 m-2">
-                    <h3 class="card-title text-center">{{ port }}</h3>
-                    <p>Service : {{ content.service }}</p>
-                    <p>Version : {{ content.banner }}</p>
+                    <h3 class="card-title text-center">Port: {{ port }}</h3>
+                    <p>Service: {{ content.service }}</p>
+                    <p>Version: {{ content.banner }}</p>
                     {% if content.nmap_scripts %}
                         <div class="card bg-secondary-subtle p-2 m-2">
-                            <h4 class="card-title text-center">Nmap scripts :</h4>
+                            <h4 class="card-title text-center">Nmap scripts:</h4>
                             {% for script_name, script_output in content.nmap_scripts.items() %}
                                 <div>
                                     <p class="fw-bold">{{ script_name }}</p>
@@ -32,7 +32,7 @@
                     {% endif %}
                     {% if content.tools %}
                         <div class="card bg-secondary-subtle p-2 m-2">
-                            <h4 class="card-title text-center">Tools :</h4>
+                            <h4 class="card-title text-center">Tools:</h4>
                             {% for tool_name, tool_output in content.tools.items() %}
                                 <div>
                                 <p class="fw-bold">{{ tool_name }}</p>
@@ -56,12 +56,12 @@
         {% if protocols.udp %}
             {% for port, content in protocols.udp.items() %}
                 <div class="card bg-success-subtle p-2 m-2">
-                    <h3 class="card-title text-center">{{ port }}</h3>
-                    <p>Service : {{ content.service }}</p>
-                    <p>Version : {{ content.banner }}</p>
+                    <h3 class="card-title text-center">Port: {{ port }}</h3>
+                    <p>Service: {{ content.service }}</p>
+                    <p>Version: {{ content.banner }}</p>
                     {% if content.nmap_scripts %}
                         <div class="card bg-secondary-subtle p-2 m-2">
-                            <h4 class="card-title text-center">Nmap scripts :</h4>
+                            <h4 class="card-title text-center">Nmap scripts:</h4>
                             {% for script_name, script_output in content.nmap_scripts.items() %}
                                 <div>
                                     <p class="fw-bold">{{ script_name }}</p>
@@ -76,7 +76,7 @@
                     {% endif %}
                     {% if content.tools %}
                         <div class="card bg-secondary-subtle p-2 m-2">
-                            <h4 class="card-title text-center">Tools :</h4>
+                            <h4 class="card-title text-center">Tools:</h4>
                             {% for tool_name, tool_output in content.tools.items() %}
                                 <div>
                                 <p class="fw-bold">{{ tool_name }}</p>

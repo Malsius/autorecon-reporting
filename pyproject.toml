@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "autorecon_reporting"
-version = "1.0.0"
+version = "1.0.1"
 description="Tool used to make HTML report from AutoRecon outputs"
 authors = [
     "Malsius",
