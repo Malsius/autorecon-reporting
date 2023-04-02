@@ -77,11 +77,12 @@ def parse_tools(service_path, protocol, port):
     return result
 
 
-def parse_nmap_scripts(host_scripts_results, service_scripts_results, nmap_scripts=None):
+def parse_nmap_scripts(service_scripts_results, host_scripts_results=None, nmap_scripts=None):
     if not nmap_scripts:
         nmap_scripts = {}
-    for script_result in host_scripts_results:
-        nmap_scripts[script_result["id"]] = script_result["output"]
+    if host_scripts_results:
+        for script_result in host_scripts_results:
+            nmap_scripts[script_result["id"]] = script_result["output"]
     for script_result in service_scripts_results:
         nmap_scripts[script_result["id"]] = script_result["output"]
     return nmap_scripts
@@ -105,7 +106,7 @@ def parse_protocol(host, host_address, protocol, result, host_scans_path):
                 result[host_address][protocol][service.port] = {
                     "service": service.service,
                     "banner": parse_banner(service.banner),
-                    "nmap_scripts": parse_nmap_scripts(host.scripts_results, service.scripts_results),
+                    "nmap_scripts": parse_nmap_scripts(service.scripts_results),
                 }
         for port, content in result[host_address][protocol].items():
             service_path = os.path.join(host_scans_path, f"{protocol}{port}")
