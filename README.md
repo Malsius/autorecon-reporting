@@ -1,7 +1,5 @@
 # AutoReconReporting
 
-Use `--only-scans-dir` when running AutoRecon.
-
 ## Usage
 
 Install :
